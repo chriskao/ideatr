@@ -31,22 +31,11 @@
 <script src="//ideatr-theplastics.appspot.com/static/app.js"></script>
 
 <link rel="stylesheet" type="text/css" href="//ideatr-theplastics.appspot.com/static/app.css" />
+<div id="topBar">
+<h1 id="title">Phase 1: Brainstorm Ideas</h1>
+<h1 id="currentIdea"></h1>
 
-<h1 id="title"><img src="//ideatr-theplastics.appspot.com/static/hangouts-logo.png" 
-    alt="Google+ Hangouts Logo" height="50" width="50">Phase 1: Brainstorm Ideas</h1>
-
-<div style="float: left; padding: 0px 20px; border-right: 1px solid #EEE">
-  <!-- <p>Collaborate with your friends to count to a big number!</p> -->
-  <dl>
-    <dt>Ideas:</dt>
-    <ul id="ideas">
-      <dd id="count"></dd>
-    </ul>
-    <!-- <dt>Participants:</dt>
-    <dd id="participants"></dd> -->
-  </dl>
-
-  <div style="position: absolute; top: 20px; right: 20px;">
+<div style="padding-right: 10px; position: absolute; top: 20px; right: 20px;">
     <ul>
       <input type=text id="inputField" onkeydown="if (event.keyCode == 13) document.getElementById('countButton').click()">
       <input type=button value="Add Idea" id="countButton"
@@ -58,6 +47,21 @@
           onClick="phaseButtonClick()"/>
     </ul>
   </div>
+</div>
+
+<div style="float: left; padding: 0px 20px; border-right: 1px solid #EEE;">
+  <dl>
+    <!-- <dt>Ideas:</dt> -->
+    <div style="-webkit-column-count: 4; -webkit-column-width:250px; height: 300px; word-wrap: break-word; overflow: hidden;">
+    <ul id="ideas">
+      <dd id="count"></dd>
+    </ul>
+  </div>
+    <!-- <dt>Participants:</dt>
+    <dd id="participants"></dd> -->
+  </dl>
+
+  
 
 </div>
 <!-- <div style="float: left; padding: 0px 20px">

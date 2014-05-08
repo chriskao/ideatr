@@ -1,27 +1,58 @@
 .bigIdea1 {
 	font-size: 150%;
+	color: purple;
 }
 
 .bigIdea2 {
 	font-size: 200%;
+	color: blue;
 }
 
 .bigIdea3 {
 	font-size: 250%;
+	color: green;
+
 }
 
 .bigIdea4 {
 	font-size: 300%;
+	color: yellow;
 }
 
 .bigIdea5 {
 	font-size: 350%;
+	color: orange;
 }
 
 .bigIdea6 {
 	font-size: 400%;
+	color:red;
+}
+
+#topBar {
+	background-color: #CAE1FF;
+	height: 110%;
+	overflow: hidden;
+}
+
+#currentIdea {
+	margin-left:auto;
+	margin-right:auto;
+}
+
+h1 { 
+	padding: 20px 20px;
+	float:left;
+}
+
+body {
+	font-family: century gothic;
 }
 
 ul {
-	color: blue;
+	list-style-type: none;
+}
+
+li {
+	padding-bottom: 5px;
 }

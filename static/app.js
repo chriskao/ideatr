@@ -47,7 +47,7 @@ function countButtonClick() {
   if (count) {
     value = count + '<li class="idea" onClick="expandIdeaClick()">' + newText + '</li>';
   } else {
-    value = '\"<li class="idea" onClick="expandIdeaClick()">' + newText + '</li>';
+    value = '<li class="idea" onClick="expandIdeaClick()">' + newText + '</li>';
   }
   
 
@@ -57,7 +57,8 @@ function countButtonClick() {
   gapi.hangout.data.submitDelta({'count': value});
 }
 
-var forbiddenCharacters = /[^a-zA-Z!0-9_\- ]/;
+// var forbiddenCharacters = /[^a-zA-Z!0-9_\- ]/;
+var forbiddenCharacters = "";
 function setText(element, text) {
   element.innerHTML = typeof text === 'string' ?
       text.replace(forbiddenCharacters, '') :
@@ -85,17 +86,30 @@ function expandIdeaClick() {
 
     console.log(idea.innerHTML);
 
-    var ideaList = '\"' + event.target.parentNode.innerHTML;
+    var ideaList = event.target.parentNode.innerHTML;
     ideaList.replace("\"", "\\\"");
+
+    gapi.hangout.data.submitDelta({'currentIdea': idea.innerHTML});
 
     gapi.hangout.data.submitDelta({'count': ideaList});
   } else if (phase === 2) {
+    var votes = gapi.hangout.data.getState()['votes'];
+    if (!votes) votes = {};
+    else votes = JSON.parse(votes);
+    console.log(votes);
+    var strippedIdea = idea.innerHTML;
+    if (strippedIdea.indexOf("*") >= 0) strippedIdea = strippedIdea.substr(0,strippedIdea.indexOf("*"));
+    console.log(strippedIdea);
+    if (votes[strippedIdea]) {
+      votes[strippedIdea] = votes[strippedIdea] + 1;
+    } else {
+      votes[strippedIdea] = 1;
+    }
     idea.innerHTML = idea.innerHTML + "*";
 
-    var ideaList = '\"' + event.target.parentNode.innerHTML;
-    ideaList.replace("\"", "\\\"");
+    console.log(JSON.stringify(votes));
 
-    gapi.hangout.data.submitDelta({'count': ideaList});
+    gapi.hangout.data.submitDelta({'votes': JSON.stringify(votes)});
   }
 }
 
@@ -128,9 +142,10 @@ function updateStateUi(state) {
   var stateCount = state['count'];
   var statePhase = parseInt(state['phase']);
   console.log('Phase:' + statePhase);
+
   if (!stateCount) {
-    setText(countElement, 'IDEAS QUICK');
-  } else {
+    setText(countElement, 'YOUR IDEAS WILL APPEAR HERE. COME UP WITH AS MANY AS YOU CAN!');
+  } else if (!statePhase || statePhase < 2) {
     setText(countElement, stateCount.toString());
   }
 
@@ -144,7 +159,16 @@ function updateStateUi(state) {
     var button = document.getElementById('phaseButton');
     button.value = 'Start Voting';
     var title = document.getElementById('title');
-    setText(title, 'Phase 2: Discusson');
+    setText(title, 'Phase 2: Discussion');
+    var currentIdea = document.getElementById('currentIdea');
+    currentIdea.style.border = "1px solid black";
+    if (!state['currentIdea']) {
+      setText(currentIdea, 'Click on an idea to discuss!');
+    } else {
+      setText(currentIdea, state['currentIdea']);
+    }
+    var topBar = document.getElementById('topBar');
+    topBar.style.backgroundColor = "#E1FFCA";
 
     // change button
     // update everything else in UI (title, voting)
@@ -155,16 +179,48 @@ function updateStateUi(state) {
     setText(title, 'Phase 3: Vote on your ideas!');
     var countButton = document.getElementById('countButton');
     var inputField = document.getElementById('inputField');
+    var currentIdea = document.getElementById('currentIdea');
+    setText(currentIdea, '');
+    currentIdea.style.border = "0px solid black";
     if (countButton && inputField) {
       countButton.parentNode.removeChild(countButton);
       inputField.parentNode.removeChild(inputField);
     }
+    var topBar = document.getElementById('topBar');
+    topBar.style.backgroundColor = "#FFCAE1";
     // you're done... final report
   } else if (statePhase === 3){
+    var topBar = document.getElementById('topBar');
+    topBar.style.backgroundColor = "#E1CAFF";
     var button = document.getElementById('phaseButton');
     button.parentNode.removeChild(button);
     var title = document.getElementById('title');
-    setText(title, 'Done!');
+    setText(title, 'Done! Your top voted ideas:');
+    console.log(countElement.innerHTML);
+    setText(countElement, '');
+
+    var votes = state['votes'];
+    if (votes) {
+      votes = JSON.parse(votes);
+      var sortable_ideas = [];
+      for (var key in votes) {
+        sortable_ideas.push([key, votes[key]]);
+      }
+      sortable_ideas.sort(function(a, b) {
+        return b[1]-a[1];
+      });
+      console.log(sortable_ideas);
+
+      var internalValue = '';
+
+      for (i = 0; i < sortable_ideas.length; i++) {
+        internalValue = internalValue + '<li class="finalIdea">' + sortable_ideas[i][0] + ' (votes: ' + sortable_ideas[i][1] + ')</li>';
+      }
+
+      setText(countElement, internalValue);
+      console.log(countElement.innerHTML);
+    }
+
     //hightlight ideas with most votes / give report
   }
 }
